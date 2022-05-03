@@ -1,12 +1,12 @@
 import React, {useEffect, useState, useRef} from "react";
 import { Button, StyleSheet, Text, View } from "react-native"
 import Number from "./Number";
-import RNRestart from 'react-native-restart';
+import shuffle from 'lodash.shuffle';
 
 
 export default Game = ({ randomNumbersCount, initialSeconds }) => {
   const [randomNumbers, setRandomNumbers] = useState([]);
-  const [ target, setTarget ] = useState(999);
+  const [ target, setTarget ] = useState();
   const [selectedNumbers, setSelectedNumbers] = useState([]);
   const [remainingSeconds, setRemainingSeconds] = useState(initialSeconds);
   const [ gameStatus, setGameStatus] = useState('PLAYING');
@@ -24,7 +24,8 @@ export default Game = ({ randomNumbersCount, initialSeconds }) => {
   useEffect(() => {
     const numbers = Array.from({ length: randomNumbersCount}).map(() => 1+Math.floor(10 * Math.random()));
     const target = numbers.slice(0, randomNumbersCount -2).reduce((acc,cur) => acc + cur, 0);
-    setRandomNumbers(numbers);
+    setRandomNumbers(shuffle(numbers));
+   
     setTarget(target);
 
    intervalId.current = setInterval(() => setRemainingSeconds(seconds => seconds -1 ) , 1000);
@@ -74,10 +75,18 @@ export default Game = ({ randomNumbersCount, initialSeconds }) => {
            isSelected={isNumberSelected(index) || gameStatus !=='PLAYING'}
            onSelected={selectedNumber}
            />
-      
+       
 
       ))}
+      
       </View>
+      <Text>
+       {gameStatus}
+      </Text>
+      {gameStatus !== 'PLAYING' && 
+        (<Button title="Play Again" onPress={(gameStatus) => resetGame(gameStatus)}/>)
+      }
+      
       
     </View>
   );
